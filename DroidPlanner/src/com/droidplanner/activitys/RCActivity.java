@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v13.app.FragmentTabHost;
 import android.util.Log;
 import android.view.InputDevice;
 import android.view.Menu;
@@ -23,6 +24,7 @@ public class RCActivity extends SuperActivity implements OnFlighDataListener {
 	static final int NUM_FRAGMENT_ITEMS = 2;
 	MyAdapter mAdapter;
 	ViewPager mPager;
+	FragmentTabHost mTabHost;
 	
 	private MenuItem bTogleRC;
 	MenuItem connectButton;
@@ -41,13 +43,51 @@ public class RCActivity extends SuperActivity implements OnFlighDataListener {
 		setContentView(R.layout.rc);
 		
 		rcFragment = ((RCFragment)getFragmentManager().findFragmentById(R.id.rcFragment));
-		
+		/*
 		mAdapter = new MyAdapter(getFragmentManager());
 		mPager = (ViewPager)findViewById(R.id.rcPager);
 		if (mPager != null) {
 			mPager.setAdapter(mAdapter);
 		}
+		*/
 		
+		mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
+		if (mTabHost != null) {
+			mTabHost.setup(this, getFragmentManager(), R.id.tabFrameLayout);
+			mTabHost.addTab(
+                mTabHost.newTabSpec("tab1").setIndicator("HUD"),
+                        HudFragment.class, null);
+			mTabHost.addTab(
+                mTabHost.newTabSpec("tab2").setIndicator("Map"),
+                        FlightMapFragment.class, null);
+		}
+		/*
+		/*
+		final ActionBar actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		
+		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+	        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+	            // show the given tab
+	        }
+
+	        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+	            // hide the given tab
+	        }
+
+	        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+	            // probably ignore this event
+	        }
+	    };
+
+	    for (int i = 0; i < 2; i++) {
+	        actionBar.addTab(
+	                actionBar.newTab()
+	                        .setText("Tab " + (i + 1))
+	                        .setTabListener(tabListener));
+	    }
+		*/
+	    
 	}
 	
 	@Override
@@ -141,7 +181,20 @@ public class RCActivity extends SuperActivity implements OnFlighDataListener {
         			return null;
         	} //ArrayListFragment.newInstance(position);
         }
+        
+        @Override
+    	public CharSequence getPageTitle (int position) {
+    		switch (position) {
+    		case 0:
+    			return "HUD";
+    		case 1:;
+    			return "Map";
+    		default:
+    			return "";
+    		}
+    	}
     }
+	
 
 	@Override
 	public void onSetGuidedMode(LatLng point) {
